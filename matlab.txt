@@ -1,0 +1,168 @@
+sooriya brooo:
+% --- 1. READ THINGSPEAK SENSOR DATA ---
+readChannelID = 3255300;
+irFieldID = 1;
+readAPIKey = 'NQD3J47GDIQVM04U';
+
+% Fetch the last 1 minute of data and grab the most recent value
+[irData, timeStamp] = thingSpeakRead(readChannelID, 'Fields', irFieldID, 'NumMinutes', 1, 'ReadKey', readAPIKey);
+latestIR = irData(end);
+
+% --- 2. CHECK ALERT CONDITION (IR = 0 means Intruder) ---
+if (latestIR == 0)
+
+    % --- TWILIO CONFIGURATION (SMS & CALL) ---
+    twilioSID = 'AC16c20d4e7eacefb7087ea4f7a048ae03';
+    twilioAuthToken = '3ca10f6daf848c335c7ebbece4ab8343';
+    twilioFrom = '+1 361 282 9276'; 
+    twilioTo = '+919345882049'; 
+
+    % Twilio Endpoints and Authentication
+    smsUrl = "https://api.twilio.com/2010-04-01/Accounts/" + twilioSID + "/Messages.json";
+    callUrl = "https://api.twilio.com/2010-04-01/Accounts/" + twilioSID + "/Calls.json";
+    authHeader = matlab.net.http.field.AuthorizationField('Authorization', ['Basic ' matlab.net.base64encode([twilioSID ':' twilioAuthToken])]);
+    twilioOptions = weboptions('HeaderFields', authHeader, 'MediaType', 'application/x-www-form-urlencoded');
+
+    % Execute Twilio SMS
+    smsBody = sprintf('🚨 INTRUDER ALERT!\nIR Sensor = 0\nTime: %s', datestr(timeStamp(end)));
+    webwrite(smsUrl, 'To', twilioTo, 'From', twilioFrom, 'Body', smsBody, twilioOptions);
+
+    % Execute Twilio Voice Call
+    webwrite(callUrl, 'To', twilioTo, 'From', twilioFrom, 'Url', 'http://demo.twilio.com/docs/voice.xml', twilioOptions);
+
+    % --- THINGSPEAK EMAIL CONFIGURATION ---
+    alertApiKey = 'TAKan5F8zN+1MgsOJUv';
+    alertUrl = "https://api.thingspeak.com/alerts/send";
+    emailOptions = weboptions("HeaderFields", ["ThingSpeak-Alerts-API-Key", alertApiKey]);
+
+    % Execute ThingSpeak Email
+    alertSubject = "🚨 Intruder Detection Alert";
+    alertBody = sprintf('INTRUDER DETECTED!\nIR Sensor Status: LOW (0)\nTime: %s', datestr(timeStamp(end)));
+    webwrite(alertUrl, "body", alertBody, "subject", alertSubject, emailOptions);
+
+end
+
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+
+% --- Configuration ---
+sensorValue = 1; % 1 = Intruder, 0 = Clear
+readchannelID = 1234567; % Enter your actual ID here
+irfieldID = 1;
+readAPIkey = 'YOUR_READ_KEY';
+
+% --- Twilio Credentials ---
+twilioSID = 'ACxxxxxx';
+twilioAuthToken = 'xxxxxx';
+twilioFrom = '+1234567890';
+twilioTo = '+0987654321';
+
+% --- ThingSpeak Alerts Credentials ---
+alertAPIkey = 'YOUR_ALERTS_API_KEY';
+alerturl = 'https://api.thingspeak.com/alerts/send';
+
+% --- Authentication Setup ---
+auth = [twilioSID ':' twilioAuthToken];
+authHeader = ['Basic ' matlab.net.base64encode(auth)];
+twiliooptions = weboptions('HeaderFields',{'Authorization', authHeader}, ...
+                           'MediaType','application/x-www-form-urlencoded');
+options = weboptions('HeaderFields',{'ThingSpeak-Alerts-API-Key', alertAPIkey});
+
+% --- Alert Logic ---
+if (sensorValue == 1)
+    disp("Alert Triggered!");
+    currentTime = datestr(now);
+    
+    % 1. Send SMS via Twilio
+    smsBody = sprintf('Intruder Alert!\nIR Sensor: %d\nTime: %s', sensorValue, currentTime);
+    try
+        webwrite(['https://api.twilio.com/2010-04-01/Accounts/' twilioSID '/Messages.json'], ...
+                 'To', twilioTo, 'From', twilioFrom, 'Body', smsBody, twiliooptions);
+        disp('SMS alert sent successfully.');
+    catch smsexception
+        fprintf("SMS failed: %s\n", smsexception.message);
+    end
+
+    % 2. Place Voice Call via Twilio
+    try
+        webwrite(['https://api.twilio.com/2010-04-01/Accounts/' twilioSID '/Calls.json'], ...
+                 'To', twilioTo, 'From', twilioFrom, 'Url', 'http://demo.twilio.com/docs/voice.xml', ...
+                 twiliooptions);
+        disp('Voice call alert placed.');
+    catch callexception
+        fprintf("Call failed: %s\n", callexception.message);
+    end
+
+    % 3. Send ThingSpeak Email/Push Alert
+    alertsubjects = "Intruder Detection Alert";
+    alertbody = sprintf('Intruder detected! IR sensor status: %d at %s.', sensorValue, currentTime);
+    try
+        webwrite(alerturl, 'body', alertbody, 'subject', alertsubjects, options);
+        disp("ThingSpeak alert sent successfully.");
+    catch someexception
+        fprintf("ThingSpeak alert failed: %s\n", someexception.message);
+    end
+else
+    disp("No intruder detected. System normal.");
+end
+
+
+
+
+
+xxxxxxxxxxxx
+
+readChannelID = 3326670;
+irFieldID = 1;
+readAPIKey = '7JXCGXWSS1O2EDPS';
+
+[irData, timeStamp] = thingSpeakRead(readChannelID, 'Fields', irFieldID, 'NumMinutes', 1, 'ReadKey', readAPIKey);
+latestIR = irData;
+
+
+if (latestIR == 0)
+ 
+    alertApiKey = 'TAKBlHVFGowLJIm5l3p';
+    alertUrl = "https://api.thingspeak.com/alerts/send";
+    emailOptions = weboptions("HeaderFields", ["ThingSpeak-Alerts-API-Key", alertApiKey]);
+
+    alertSubject = " Intruder Detection Alert";
+    alertBody = sprintf('INTRUDER DETECTED!');
+    webwrite(alertUrl, "body", alertBody, "subject", alertSubject, emailOptions);
+
+end
+
+
+
+xxxxxxxxxx call:
+channelID = 3255299;
+
+irValue = thingSpeakRead(channelID,'Fields',3,'NumPoints',1);
+
+if ~isempty(irValue) && irValue == 1
+
+    accountSID = "ACbd750d67d0d2967221464cd9b18fdd6f";
+    authToken  = "a4385010c60ec992e16dd3825792f42c";
+
+    url = "https://api.twilio.com/2010-04-01/Accounts/" + ...
+          accountSID + "/Messages.json";
+
+    % Proper URL-encoded SMS data
+    dataString = "To=%2B918220934623" + ...
+                 "&From=%2B15418713214" + ...
+                 "&Body=ALERT!%20Intruder%20detected%20by%20IR%20sensor.";
+
+    options = weboptions( ...
+        "Username", accountSID, ...
+        "Password", authToken, ...
+        "RequestMethod", "post");
+
+    try
+        response = webwrite(url, dataString, options);
+        disp("📩 SMS sent successfully!");
+        disp(response);
+    catch ME
+        disp("Error details:");
+        disp(ME.message);
+    end
+end
