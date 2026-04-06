@@ -1,0 +1,42 @@
+Pin # | Name          | Type/Function
+-----------------------------------------
+01    | 3.3V Power    | Power (Output)
+02    | 5V Power      | Power (Output)
+03    | GPIO 2        | I2C1 SDA
+04    | 5V Power      | Power (Output)
+05    | GPIO 3        | I2C1 SCL
+06    | Ground        | Ground
+07    | GPIO 4        | GPCLK0
+08    | GPIO 14       | UART0 TX
+09    | Ground        | Ground
+10    | GPIO 15       | UART0 RX
+11    | GPIO 17       | Generic
+12    | GPIO 18       | PCM CLK / PWM0
+13    | GPIO 27       | Generic
+14    | Ground        | Ground
+15    | GPIO 22       | Generic
+16    | GPIO 23       | Generic
+17    | 3.3V Power    | Power (Output)
+18    | GPIO 24       | Generic
+19    | GPIO 10       | SPI0 MOSI
+20    | Ground        | Ground
+21    | GPIO 9        | SPI0 MISO
+22    | GPIO 25       | Generic
+23    | GPIO 11       | SPI0 SCLK
+24    | GPIO 8        | SPI0 CE0
+25    | Ground        | Ground
+26    | GPIO 7        | SPI0 CE1
+27    | GPIO 0        | EEPROM ID_SD
+28    | GPIO 1        | EEPROM ID_SC
+29    | GPIO 5        | Generic
+30    | Ground        | Ground
+31    | GPIO 6        | Generic
+32    | GPIO 12       | PWM0
+33    | GPIO 13       | PWM1
+34    | Ground        | Ground
+35    | GPIO 19       | PCM FS / PWM1
+36    | GPIO 16       | Generic
+37    | GPIO 26       | Generic
+38    | GPIO 20       | PCM DIN
+39    | Ground        | Ground
+40    | GPIO 21       | PCM DOUT
