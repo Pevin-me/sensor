@@ -1,0 +1,46 @@
+% --- Read ThingSpeak Data ---
+readChannelID = 3255300;
+readAPIKey = 'YOUR_READ_API_KEY';
+
+data = thingSpeakRead(readChannelID, ...
+    'Fields', 1, ...
+    'NumPoints', 1, ...
+    'ReadKey', readAPIKey);
+
+latestValue = data(end);
+
+% --- Condition (Intruder detected) ---
+if latestValue == 0
+
+    % --- Twilio Credentials ---
+    accountSID = "YOUR_TWILIO_SID";
+    authToken  = "YOUR_TWILIO_AUTH_TOKEN";
+    fromNumber = "+1XXXXXXXXXX";   % Twilio number
+    toNumber   = "+91XXXXXXXXXX";  % Your number
+
+    % --- Base URL ---
+    baseURL = "https://api.twilio.com/2010-04-01/Accounts/" + accountSID;
+
+    % --- Auth Setup ---
+    options = weboptions( ...
+        "Username", accountSID, ...
+        "Password", authToken, ...
+        "RequestMethod", "post");
+
+    % --- 1. Send SMS ---
+    smsMessage = sprintf("ALERT! Intruder detected. IR = %d", latestValue);
+
+    webwrite(baseURL + "/Messages.json", ...
+        "To", toNumber, ...
+        "From", fromNumber, ...
+        "Body", smsMessage, ...
+        options);
+
+    % --- 2. Make Call ---
+    webwrite(baseURL + "/Calls.json", ...
+        "To", toNumber, ...
+        "From", fromNumber, ...
+        "Url", "http://demo.twilio.com/docs/voice.xml", ...
+        options);
+
+end
